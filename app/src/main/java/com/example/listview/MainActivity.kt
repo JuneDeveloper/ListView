@@ -16,6 +16,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginStart
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,8 +45,14 @@ class MainActivity : AppCompatActivity() {
         title = "Каталог пользователей"
 
         saveBTN.setOnClickListener {
-            if (editTextAgeET.text.isEmpty()||editTextNameET.text.isEmpty()) return@setOnClickListener
-            people.add(User(editTextNameET.text.toString(),Integer.parseInt(editTextAgeET.text.toString())))
+            if (editTextAgeET.text.isEmpty() || editTextNameET.text.isEmpty()) return@setOnClickListener
+            else
+                people.add(
+                    User(
+                        editTextNameET.text.toString(),
+                        Integer.parseInt(editTextAgeET.text.toString())
+                    )
+                )
             adapter.notifyDataSetChanged()
             editTextNameET.text.clear()
             editTextAgeET.text.clear()
@@ -53,10 +60,9 @@ class MainActivity : AppCompatActivity() {
 
         listViewLV.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position, _ ->
-                val some = adapter.getItem(position)
-                adapter.remove(some)
-                Toast.makeText(this, "Пользователь удален", Toast.LENGTH_SHORT).show()
-            }
+            val some = adapter.getItem(position)
+            adapter.remove(some)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

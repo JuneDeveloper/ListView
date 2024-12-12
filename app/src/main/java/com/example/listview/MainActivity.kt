@@ -1,22 +1,14 @@
 package com.example.listview
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginStart
-import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,11 +51,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         listViewLV.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-            val some = adapter.getItem(position)
-            adapter.remove(some)
-        }
+            MyDialog.createDialog(this,adapter)
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main,menu)

@@ -9,10 +9,13 @@ import android.widget.EditText
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity() {
 
-    private val people:MutableList<User> = mutableListOf()
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var adapter: ArrayAdapter<User>
 
     private lateinit var toolBarMain:Toolbar
     private lateinit var editTextNameET:EditText
@@ -24,36 +27,43 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        editTextNameET = findViewById(R.id.editTextNameET)
-        editTextAgeET = findViewById(R.id.editTextAgeET)
-        saveBTN = findViewById(R.id.saveBTN)
-
-        listViewLV = findViewById(R.id.listViewLV)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, people)
-        listViewLV.adapter = adapter
-
         toolBarMain = findViewById(R.id.toolBarMain)
         setSupportActionBar(toolBarMain)
         title = "Каталог пользователей"
 
-        saveBTN.setOnClickListener {
-            if (editTextAgeET.text.isEmpty() || editTextNameET.text.isEmpty()) return@setOnClickListener
-            else
-                people.add(
-                    User(
-                        editTextNameET.text.toString(),
-                        Integer.parseInt(editTextAgeET.text.toString())
-                    )
-                )
+        editTextNameET = findViewById(R.id.editTextNameET)
+        editTextAgeET = findViewById(R.id.editTextAgeET)
+        saveBTN = findViewById(R.id.saveBTN)
+        listViewLV = findViewById(R.id.listViewLV)
+
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
+        listViewLV.adapter = adapter
+
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+
+        userViewModel.userList.observe(this){ updateList ->
+            adapter.clear()
+            adapter.addAll(updateList)
             adapter.notifyDataSetChanged()
-            editTextNameET.text.clear()
-            editTextAgeET.text.clear()
+        }
+
+        saveBTN.setOnClickListener {
+            val name = editTextNameET.text.toString()
+            val ageText = editTextAgeET.text.toString()
+            if (name.isNotEmpty() && ageText.isNotEmpty()) {
+                val age = ageText.toInt()
+                val currentList = userViewModel.userList.value?: mutableListOf()
+                currentList.add(User(name,age))
+                userViewModel.userList.value = currentList
+                editTextNameET.text.clear()
+                editTextAgeET.text.clear()
+            }
+            else return@setOnClickListener
         }
 
         listViewLV.onItemClickListener =
             MyDialog.createDialog(this,adapter)
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -68,3 +78,5 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 }
+
+
